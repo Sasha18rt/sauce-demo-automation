@@ -14,6 +14,9 @@ public class CartPage {
     private By itemName = By.cssSelector(".inventory_item_name");
     private By removeButton = By.cssSelector(".cart_button");
     private By checkoutButton = By.id("checkout");
+    private By continueShoppingButton = By.id("continue-shopping");
+    private By itemPrices = By.cssSelector(".inventory_item_price");
+    private By itemDescriptions = By.cssSelector(".inventory_item_desc");
 
     public CartPage(WebDriver driver) {
         this.driver = driver;
@@ -21,6 +24,25 @@ public class CartPage {
 
     public int getCartItemCount() {
         return driver.findElements(cartItems).size();
+    }
+
+    public WebElement getFirstItem() {
+        return driver.findElements(itemName).get(0);
+    }
+    public String getFirstItemName() {
+        return getFirstItem().getText();
+    }
+
+    public List<WebElement> getAllItems() {
+        return driver.findElements(itemName);
+    }
+
+    public String getItemPrice(int index) {
+        return driver.findElements(itemPrices).get(index).getText();
+    }
+
+    public String getItemDescription(int index) {
+        return driver.findElements(itemDescriptions).get(index).getText();
     }
 
     public boolean isItemInCart(String productName) {
@@ -34,17 +56,28 @@ public class CartPage {
     }
 
     public void removeItemFromCart(String productName) {
-        List<WebElement> items = driver.findElements(cartItems);
-        for (WebElement item : items) {
-            WebElement nameElement = item.findElement(itemName);
-            if (nameElement.getText().equalsIgnoreCase(productName)) {
-                item.findElement(removeButton).click();
-                break;
+        while (isItemInCart(productName)) {
+            List<WebElement> items = driver.findElements(cartItems);
+            for (WebElement item : items) {
+                WebElement nameElement = item.findElement(itemName);
+                if (nameElement.getText().equalsIgnoreCase(productName)) {
+                    item.findElement(removeButton).click();
+                    break;
+                }
             }
         }
     }
 
     public void proceedToCheckout() {
         driver.findElement(checkoutButton).click();
+    }
+
+    public WebElement getContinueShoppingButton() {
+        return driver.findElement(continueShoppingButton);
+    }
+
+    public ProductPage continueShopping() {
+        getContinueShoppingButton().click();
+        return new ProductPage(driver);
     }
 }

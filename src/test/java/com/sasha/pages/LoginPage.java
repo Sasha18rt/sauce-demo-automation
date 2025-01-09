@@ -37,4 +37,11 @@ public class LoginPage {
     public boolean isLoginSuccessful() {
         return driver.getPageSource().contains("Products");
     }
+
+    public ProductPage login(String username, String password) {
+        enterUsername(username);
+        enterPassword(password);
+        clickLogin();
+        return new ProductPage(driver);
+    }
 }

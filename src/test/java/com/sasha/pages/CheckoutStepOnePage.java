@@ -2,6 +2,7 @@ package com.sasha.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 public class CheckoutStepOnePage {
 
@@ -37,8 +38,10 @@ public class CheckoutStepOnePage {
         driver.findElement(continueButton).click();
     }
 
+    public WebElement getCencelButton() {return driver.findElement(continueButton);}
+
     public void clickCancelButton() {
-        driver.findElement(cancelButton).click();
+        getCencelButton().click();
     }
 
     public String getErrorMessage() {
@@ -51,6 +54,12 @@ public class CheckoutStepOnePage {
         enterPostalCode(postalCode);
     }
 
+    // Business Logic
+
+    public CartPage cencelCheckout() {
+        clickContinueButton();
+        return new CartPage(driver);
+    }
     public CheckoutStepTwoPage proceedToNextStep() {
         clickContinueButton();
         return new CheckoutStepTwoPage(driver);

@@ -4,6 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -12,35 +13,60 @@ public class ProductPage {
 
     private WebDriver driver;
 
-    //Locator button add to cart
     private By addToCartButton = By.cssSelector(".inventory_item button");
     private By removeButton = By.id("remove-sauce-labs-backpack");
     private By goToCartButton = By.cssSelector(".shopping_cart_link");
+    private By appLogo = By.cssSelector(".app_logo");
+    private By burgerMenuButton = By.id("react-burger-menu-btn");
+    private By sortDropdown = By.cssSelector(".product_sort_container");
 
     public ProductPage(WebDriver driver) {
         this.driver = driver;
     }
 
+    public WebElement getAppLogo(){ return driver.findElement(appLogo);}
 
-    public CartPage addToCartByProductName(String productName) {
+    public void clickAppLogo(){getAppLogo().click();}
+
+    public WebElement getBurgerMenuButton(){ return driver.findElement(burgerMenuButton);}
+
+    public void clickBurgerMenuButton(){getBurgerMenuButton().click();}
+
+    public WebElement getGoToCartButton() {
+        return driver.findElement(goToCartButton);
+    }
+
+    public WebElement getAddToCartButton() {   return driver.findElement(addToCartButton);}
+
+    public WebElement getRemoveButton() {return driver.findElement(removeButton);}
+
+    public void clickGoToCartButton() {getGoToCartButton().click();}
+
+    public WebElement geRremoveButton() {return driver.findElement(removeButton);}
+
+    public WebElement getSortDropdown() {
+        return driver.findElement(sortDropdown);
+    }
+
+    public void clickSortDropdown() {
+        getSortDropdown().click();
+    }
+
+    //Functions
+
+    public void addToCartByProductName(String productName) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement product = wait.until(ExpectedConditions.visibilityOfElementLocated(
                 By.xpath("//div[text()='" + productName + "']/ancestor::div[@class='inventory_item']")));
 
         product.findElement(By.cssSelector(".btn_inventory")).click();
-        return new CartPage(driver);
     }
+
 
     public boolean isProductInCart(String productName) {
         return driver.findElement(By.xpath("//a[text()='" + productName + "']")).isDisplayed();
     }
-    public WebElement getGoToCartButton() {
-        return driver.findElement(goToCartButton);
-    }
-    public void clickGoToCartButton() {
-        getGoToCartButton().click();
-    }
-    public WebElement removeButton() {return driver.findElement(removeButton);}
+    //Business logic
 
     public ProductPage addToCart(String productName) {
         addToCartByProductName(productName);
@@ -50,4 +76,13 @@ public class ProductPage {
         clickGoToCartButton();
         return new CartPage(driver);
     }
+
+    public ProductPage setSortDropdownOption(String option) {
+        clickAppLogo();
+        clickSortDropdown();
+        Select dropdown = new Select(getSortDropdown());
+        dropdown.selectByValue(option);
+        return this;
+    }
+
 }

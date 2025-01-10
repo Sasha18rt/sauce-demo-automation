@@ -55,7 +55,7 @@ public class CartPage {
         return false;
     }
 
-    public void removeItemFromCart(String productName) {
+    public void removeItemFromCartByName(String productName) {
         while (isItemInCart(productName)) {
             List<WebElement> items = driver.findElements(cartItems);
             for (WebElement item : items) {
@@ -68,16 +68,26 @@ public class CartPage {
         }
     }
 
-    public void proceedToCheckout() {
-        driver.findElement(checkoutButton).click();
-    }
+    public WebElement getCheckoutButton() {return driver.findElement(checkoutButton);}
+
+    public void clickCheckoutButton() {getCheckoutButton().click();}
 
     public WebElement getContinueShoppingButton() {
         return driver.findElement(continueShoppingButton);
     }
+    public void clickContinueShoppingButton() {getContinueShoppingButton().click();}
+
+
+//BUSINESS LOGIC
+
 
     public ProductPage continueShopping() {
-        getContinueShoppingButton().click();
+        clickContinueShoppingButton();
         return new ProductPage(driver);
+    }
+
+    public CheckoutStepOnePage goToCheckoutPage() {
+        clickCheckoutButton();
+        return new CheckoutStepOnePage(driver);
     }
 }

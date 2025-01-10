@@ -34,13 +34,16 @@ public class CheckoutStepTwoPage {
         return driver.findElement(summaryTotal).getText();
     }
 
+    // Business Logic
+
+
     public CheckoutCompletePage clickFinishButton() {
         driver.findElement(finishButton).click();
         return new CheckoutCompletePage(driver);
     }
 
-    public CartPage clickCancelButton() {
+    public ProductPage clickCancelButton() {
         driver.findElement(cancelButton).click();
-        return new CartPage(driver);
+        return new ProductPage(driver);
     }
 }

@@ -28,6 +28,7 @@ public class CheckoutCompletePage {
         return driver.findElement(orderConfirmationText).getText();
     }
 
+    // Business Logic
 
     public ProductPage clickBackHomeButton() {
         driver.findElement(backHomeButton).click();

@@ -67,21 +67,14 @@ public class SomeTests {
     void testAddProductToTheCart(Products products) {
         Products product = Products.DEFAULT_PRODUCT;
 
-        ProductPage inventoryPage = loginPage.login("standard_user", "secret_sauce");
-
-        // Add wait to ensure the page has loaded after login
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement inventoryContainer = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.id("shopping_cart_container"))); // Replace with an appropriate locator for the main page
-
-        String firstItem = inventoryPage
+        String firstItem = loginPage.login("standard_user", "secret_sauce")
                 .addToCart(products.getName())
                 .goToCart()
                 .getFirstItemName();
 
-
         assertEquals(firstItem, products.getName());
     }
+
     @AfterAll
     void tearDown() {
         if (driver != null) {

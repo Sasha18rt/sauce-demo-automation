@@ -37,7 +37,7 @@ public class CheckoutStepTwoPage {
     // Business Logic
 
 
-    public CheckoutCompletePage clickFinishButton() {
+    public CheckoutCompletePage CompleteCheckout() {
         driver.findElement(finishButton).click();
         return new CheckoutCompletePage(driver);
     }

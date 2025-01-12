@@ -60,7 +60,10 @@ public class CheckoutStepOnePage {
         clickContinueButton();
         return new CartPage(driver);
     }
-    public CheckoutStepTwoPage proceedToNextStep() {
+    public CheckoutStepTwoPage proceedToNextStep(String firstName, String lastName, String postalCode) {
+        enterFirstName(firstName);
+        enterLastName(lastName);
+        enterPostalCode(postalCode);
         clickContinueButton();
         return new CheckoutStepTwoPage(driver);
     }

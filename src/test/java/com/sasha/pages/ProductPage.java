@@ -19,6 +19,7 @@ public class ProductPage {
     private By appLogo = By.cssSelector(".app_logo");
     private By burgerMenuButton = By.id("react-burger-menu-btn");
     private By sortDropdown = By.cssSelector(".product_sort_container");
+    private By productName = By.cssSelector(".inventory_item_name ");
 
     public ProductPage(WebDriver driver) {
         this.driver = driver;
@@ -42,8 +43,16 @@ public class ProductPage {
 
     public void clickGoToCartButton() {getGoToCartButton().click();}
 
-    public WebElement geRremoveButton() {return driver.findElement(removeButton);}
+    public WebElement getRremoveButton() {return driver.findElement(removeButton);}
 
+    public String getFirstProduct() {
+        return driver.findElements(productName).get(0).getText();
+    }
+
+
+    public boolean isLoginSuccessful() {
+        return driver.getPageSource().contains("Products");
+    }
     public WebElement getSortDropdown() {
         return driver.findElement(sortDropdown);
     }

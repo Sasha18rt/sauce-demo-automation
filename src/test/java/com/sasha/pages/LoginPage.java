@@ -1,5 +1,6 @@
 package com.sasha.pages;
 
+import com.sasha.data.Credentials;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -34,14 +35,16 @@ public class LoginPage {
         return driver.findElement(errorMessage).getText();
     }
 
-    public boolean isLoginSuccessful() {
-        return driver.getPageSource().contains("Products");
-    }
 
-    public ProductPage login(String username, String password) {
-        enterUsername(username);
-        enterPassword(password);
+    public ProductPage login(Credentials credentials) {
+        enterUsername(credentials.getUsername());
+        enterPassword(credentials.getPassword());
         clickLogin();
         return new ProductPage(driver);
     }
+
+    public ProductPage loginAsStandardUser() {
+        return login(Credentials.STANDARD_USER);
+    }
+
 }

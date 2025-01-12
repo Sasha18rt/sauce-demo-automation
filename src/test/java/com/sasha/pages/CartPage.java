@@ -90,4 +90,9 @@ public class CartPage {
         clickCheckoutButton();
         return new CheckoutStepOnePage(driver);
     }
+
+    public CartPage removeItemFromCart(String productName) {
+        removeItemFromCartByName(productName);
+        return new CartPage(driver);
+    }
 }

@@ -13,6 +13,7 @@ public class LoginPage {
     private By passwordField = By.id("password");
     private By loginButton = By.id("login-button");
     private By errorMessage = By.cssSelector("[data-test='error']");
+    private By loginLogo = By.cssSelector(".login_logo");
 
     public LoginPage(WebDriver driver) {
         this.driver = driver;
@@ -23,6 +24,12 @@ public class LoginPage {
         driver.findElement(usernameField).sendKeys(username);
     }
 
+    public WebElement getLoginLogo(){
+        return driver.findElement(loginLogo);
+    }
+    public String getLoginlogoText(){
+        return getLoginLogo().getText();
+    }
     public void enterPassword(String password) {
         driver.findElement(passwordField).sendKeys(password);
     }

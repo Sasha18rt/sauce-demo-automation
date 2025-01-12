@@ -94,4 +94,11 @@ public class ProductPage {
         return this;
     }
 
+    public BurgerMenu goToBurgerMenu() {
+        clickBurgerMenuButton();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("inventory_sidebar_link")));
+        return new BurgerMenu(driver);
+    }
+
 }

@@ -2,6 +2,7 @@ package com.sasha.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 public class CheckoutStepTwoPage {
 
@@ -13,6 +14,7 @@ public class CheckoutStepTwoPage {
     private By summarySubtotal = By.cssSelector(".summary_subtotal_label");
     private By summaryTax = By.cssSelector(".summary_tax_label");
     private By summaryTotal = By.cssSelector(".summary_total_label");
+    private By errorMessage = By.cssSelector("[data-test='error']");
 
     public CheckoutStepTwoPage(WebDriver driver) {
         this.driver = driver;
@@ -20,6 +22,14 @@ public class CheckoutStepTwoPage {
 
     public int getItemCount() {
         return driver.findElements(summaryItemList).size();
+    }
+
+    public WebElement getErrorMessage() {
+        return driver.findElement(errorMessage);
+    }
+
+    public String getErrorMessageText() {
+        return getErrorMessage().getText();
     }
 
     public String getSubtotal() {

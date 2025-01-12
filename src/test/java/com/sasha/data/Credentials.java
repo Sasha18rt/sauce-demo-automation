@@ -7,7 +7,8 @@ public enum Credentials {
     PERFORMANCE_GLITCH_USER("performance_glitch_user", "secret_sauce", ""),
     ERROR_USER("error_user", "secret_sauce", ""),
     VISUAL_USER("visual_user", "secret_sauce", ""),
-    INVALID_USER("invalid_user", "wrong_password", "Epic sadface: Username and password do not match any user in this service");
+    INVALID_USER("invalid_user", "wrong_password", "Epic sadface: Username and password do not match any user in this service"),
+    EMPTY_FIELDS("","","Epic sadface: Username is required");
 
     private final String username;
     private final String password;

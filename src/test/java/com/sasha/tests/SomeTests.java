@@ -1,8 +1,6 @@
 package com.sasha.tests;
 
-import com.sasha.data.Credentials;
-import com.sasha.data.Products;
-import com.sasha.data.SortOptions;
+import com.sasha.data.*;
 import com.sasha.pages.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,9 +8,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.stream.Stream;
 
@@ -58,6 +56,23 @@ public class SomeTests {
     private static Stream<Arguments> products() {
         return Stream.of(Products.values()).map(Arguments::of);
     }
+    @Test
+    void testBurgerMenuOptions() {
+        BurgerMenu menu = login().goToBurgerMenu();
+        assertTrue(menu.isOptionVisibleById("about_sidebar_link"));
+        assertTrue(menu.isOptionVisibleById("inventory_sidebar_link"));
+        assertTrue(menu.isOptionVisibleById("logout_sidebar_link"));
+        assertTrue(menu.isOptionVisibleById("reset_sidebar_link"));
+    }
+
+    @Test
+    void testLogout(){
+    String LoginLogoText = login()
+            .goToBurgerMenu()
+            .logout()
+            .getLoginlogoText();
+        assertEquals("Swag Labs", LoginLogoText);
+    }
 
     @ParameterizedTest
     @MethodSource("products")
@@ -84,6 +99,22 @@ public class SomeTests {
 
         assertEquals(0, itemsCount);
     }
+    @ParameterizedTest
+    @CsvSource({
+            "'', Doe, 12345, Error: First Name is required",
+            "John, '', 12345, Error: Last Name is required",
+            "John, Doe, '', Error: Postal Code is required"
+    })
+    void testCheckoutWithMissingFields(String firstName, String lastName, String postalCode, String expectedErrorMessage) {
+        Products product = Products.DEFAULT_PRODUCT;
+        CheckoutStepTwoPage checkoutStepTwoPage = login()
+                .addToCart(product.getName())
+                .goToCart()
+                .goToCheckoutPage()
+                .proceedToNextStep(firstName, lastName, postalCode);
+
+        assertEquals(expectedErrorMessage, checkoutStepTwoPage.getErrorMessageText());
+    }
 
     @Test
     void testSuccessfulCheckout(){
@@ -99,50 +130,25 @@ public class SomeTests {
         assertEquals("Your order has been dispatched, and will arrive just as fast as the pony can get there!", orderConfirmationText);
     }
 
-    @Test
-    void testSortOptionAtoZ(){
-        Products product = Products.DEFAULT_PRODUCT;
-        SortOptions option = SortOptions.A_TO_Z;
-
+    @ParameterizedTest
+    @MethodSource("sortOptionsAndExpectedProducts")
+    void testSortOption(SortOptions option, Products expectedProduct) {
         String firstProduct = login()
                 .setSortDropdownOption(option.getValue())
                 .getFirstProduct();
 
-        assertEquals(firstProduct, product.getName());
+        assertEquals(expectedProduct.getName(), firstProduct);
     }
-    @Test
-    void testSortOptionZtoA(){
-        Products product = Products.LAST_PRODUCT;
-        SortOptions option = SortOptions.Z_TO_A;
 
-        String firstProduct = login()
-                .setSortDropdownOption(option.getValue())
-                .getFirstProduct();
-
-        assertEquals(firstProduct, product.getName());
+    private static Stream<Arguments> sortOptionsAndExpectedProducts() {
+        return Stream.of(
+                Arguments.of(SortOptions.A_TO_Z, Products.DEFAULT_PRODUCT),
+                Arguments.of(SortOptions.Z_TO_A, Products.LAST_PRODUCT),
+                Arguments.of(SortOptions.HIGH_TO_LOW, Products.MOST_EXPENSIVE_PRODUCT),
+                Arguments.of(SortOptions.LOW_TO_HIGH, Products.CHEAPEST_PRODUCT)
+        );
     }
-    @Test
-    void testSortOptionHighToLow(){
-        Products product = Products.MOST_EXPENSIVE_PRODUCT;
-        SortOptions option = SortOptions.HIGH_TO_LOW;
 
-        String firstProduct = login()
-                .setSortDropdownOption(option.getValue())
-                .getFirstProduct();
-
-        assertEquals(firstProduct, product.getName());
-    }
-    @Test
-    void testSortOptionLowToHigh(){
-        Products product = Products.CHEAPEST_PRODUCT;
-        SortOptions option = SortOptions.LOW_TO_HIGH;
-
-        String firstProduct = login()
-                .setSortDropdownOption(option.getValue())
-                .getFirstProduct();
-
-        assertEquals(firstProduct, product.getName());
-    }
 
     private ProductPage login(){
         Credentials user = Credentials.STANDARD_USER;
@@ -150,16 +156,20 @@ public class SomeTests {
 
     }
     @AfterEach
-    void cleanUp() {
+    void cleanUp(TestInfo testInfo) {
         driver.manage().deleteAllCookies();
         js.executeScript("localStorage.clear();");
         js.executeScript("sessionStorage.clear();");
 
+        System.out.println("Test passed: " + testInfo.getDisplayName());
     }
+
     @AfterAll
     void tearDown() {
         if (driver != null) {
             driver.quit();
+            System.out.println("WebDriver session ended successfully.");
         }
     }
+
 }

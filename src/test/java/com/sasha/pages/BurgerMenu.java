@@ -5,6 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class BurgerMenu {
     private WebDriver driver;
@@ -32,11 +33,17 @@ public class BurgerMenu {
 
     public void clickCloseBurgerMenuButton() {getcloseBurgerMenuButton().click();}
 
-
+    public Boolean isOptionVisibleById(String id) {
+        try {
+            return driver.findElement(By.id(id)).isDisplayed();
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
     //Business logic
 
     public LoginPage logout(){
-        getLogout().click();
+        clickLogout();
         return new LoginPage(driver);
     }
 

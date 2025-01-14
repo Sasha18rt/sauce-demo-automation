@@ -4,9 +4,7 @@ import com.sasha.data.*;
 import com.sasha.pages.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.*;
 
 import java.util.stream.Stream;
 
@@ -29,13 +27,15 @@ public class SomeTests extends TestRunner {
     @ParameterizedTest
     @MethodSource("allUsers")
     void testLogin(Credentials user) {
-        boolean isLoginSuccessful = loginPage.login(user).isLoginSuccessful();
         if (user.isLoginExpectedToSucceed()) {
-            assertTrue(isLoginSuccessful, "Login failed for user: " + user.getUsername());
+            ProductPage productPage = loginPage.login(user);
+            assertTrue(productPage.isLoginSuccessful(), "Login failed for user: " + user.getUsername());
         } else {
+            loginPage.login(user);
             assertEquals(user.getExpectedErrorMessage(), loginPage.getErrorMessage());
         }
     }
+
 
     private static Stream<Arguments> products() {
         return Stream.of(Products.values()).map(Arguments::of);

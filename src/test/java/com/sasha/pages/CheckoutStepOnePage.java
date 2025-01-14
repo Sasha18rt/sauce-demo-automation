@@ -1,51 +1,56 @@
 package com.sasha.pages;
 
+import com.sasha.utils.DriverWrapper;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 public class CheckoutStepOnePage {
 
-    private WebDriver driver;
+    private final DriverWrapper driverWrapper;
 
-    private By firstNameField = By.id("first-name");
-    private By lastNameField = By.id("last-name");
-    private By postalCodeField = By.id("postal-code");
-    private By continueButton = By.id("continue");
-    private By cancelButton = By.id("cancel");
-    private By errorMessage = By.cssSelector(".error-message-container");
+    private final By firstNameField = By.id("first-name");
+    private final By lastNameField = By.id("last-name");
+    private final By postalCodeField = By.id("postal-code");
+    private final By continueButton = By.id("continue");
+    private final By cancelButton = By.id("cancel");
+    private final By errorMessage = By.cssSelector(".error-message-container");
 
-    public CheckoutStepOnePage(WebDriver driver) {
-        this.driver = driver;
+    public CheckoutStepOnePage(DriverWrapper driverWrapper) {
+        this.driverWrapper = driverWrapper;
     }
 
     public void enterFirstName(String firstName) {
-        driver.findElement(firstNameField).clear();
-        driver.findElement(firstNameField).sendKeys(firstName);
+        WebElement firstNameElement = driverWrapper.clickableElement(firstNameField);
+        firstNameElement.clear();
+        firstNameElement.sendKeys(firstName);
     }
 
     public void enterLastName(String lastName) {
-        driver.findElement(lastNameField).clear();
-        driver.findElement(lastNameField).sendKeys(lastName);
+        WebElement lastNameElement = driverWrapper.clickableElement(lastNameField);
+        lastNameElement.clear();
+        lastNameElement.sendKeys(lastName);
     }
 
     public void enterPostalCode(String postalCode) {
-        driver.findElement(postalCodeField).clear();
-        driver.findElement(postalCodeField).sendKeys(postalCode);
+        WebElement postalCodeElement = driverWrapper.clickableElement(postalCodeField);
+        postalCodeElement.clear();
+        postalCodeElement.sendKeys(postalCode);
     }
 
     public void clickContinueButton() {
-        driver.findElement(continueButton).click();
+        driverWrapper.clickableElement(continueButton).click();
     }
 
-    public WebElement getCencelButton() {return driver.findElement(continueButton);}
+    public WebElement getCancelButton() {
+        return driverWrapper.clickableElement(cancelButton);
+    }
 
     public void clickCancelButton() {
-        getCencelButton().click();
+        getCancelButton().click();
     }
 
     public String getErrorMessage() {
-        return driver.findElement(errorMessage).getText();
+        return driverWrapper.visibilityElement(errorMessage).getText();
     }
 
     public void fillCheckoutForm(String firstName, String lastName, String postalCode) {
@@ -56,15 +61,14 @@ public class CheckoutStepOnePage {
 
     // Business Logic
 
-    public CartPage cencelCheckout() {
-        clickContinueButton();
-        return new CartPage(driver);
+    public CartPage cancelCheckout() {
+        clickCancelButton();
+        return new CartPage(driverWrapper);
     }
+
     public CheckoutStepTwoPage proceedToNextStep(String firstName, String lastName, String postalCode) {
-        enterFirstName(firstName);
-        enterLastName(lastName);
-        enterPostalCode(postalCode);
+        fillCheckoutForm(firstName, lastName, postalCode);
         clickContinueButton();
-        return new CheckoutStepTwoPage(driver);
+        return new CheckoutStepTwoPage(driverWrapper);
     }
 }

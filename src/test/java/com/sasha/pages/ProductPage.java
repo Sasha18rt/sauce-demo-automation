@@ -1,94 +1,101 @@
 package com.sasha.pages;
 
+import com.sasha.utils.DriverWrapper;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
+import java.util.List;
 
 public class ProductPage {
 
-    private WebDriver driver;
+    private final DriverWrapper driverWrapper;
 
-    private By addToCartButton = By.cssSelector(".inventory_item button");
-    private By removeButton = By.id("remove-sauce-labs-backpack");
-    private By goToCartButton = By.cssSelector(".shopping_cart_link");
-    private By appLogo = By.cssSelector(".app_logo");
-    private By burgerMenuButton = By.id("react-burger-menu-btn");
-    private By sortDropdown = By.cssSelector(".product_sort_container");
-    private By productName = By.cssSelector(".inventory_item_name ");
+    private final By addToCartButton = By.cssSelector(".inventory_item button");
+    private final By removeButton = By.id("remove-sauce-labs-backpack");
+    private final By goToCartButton = By.cssSelector(".shopping_cart_link");
+    private final By appLogo = By.cssSelector(".app_logo");
+    private final By burgerMenuButton = By.id("react-burger-menu-btn");
+    private final By sortDropdown = By.cssSelector(".product_sort_container");
+    private final By productName = By.cssSelector(".inventory_item_name");
 
-    public ProductPage(WebDriver driver) {
-        this.driver = driver;
+    public ProductPage(DriverWrapper driverWrapper) {
+        this.driverWrapper = driverWrapper;
     }
 
-    public WebElement getAppLogo(){ return driver.findElement(appLogo);}
+    public WebElement getAppLogo() {
+        return driverWrapper.visibilityElement(appLogo);
+    }
 
-    public void clickAppLogo(){getAppLogo().click();}
+    public void clickAppLogo() {
+        driverWrapper.clickableElement(appLogo).click();
+    }
 
-    public WebElement getBurgerMenuButton(){ return driver.findElement(burgerMenuButton);}
+    public WebElement getBurgerMenuButton() {
+        return driverWrapper.visibilityElement(burgerMenuButton);
+    }
 
-    public void clickBurgerMenuButton(){getBurgerMenuButton().click();}
+    public void clickBurgerMenuButton() {
+        driverWrapper.clickableElement(burgerMenuButton).click();
+    }
 
     public WebElement getGoToCartButton() {
-        return driver.findElement(goToCartButton);
+        return driverWrapper.clickableElement(goToCartButton);
     }
 
-    public WebElement getAddToCartButton() {   return driver.findElement(addToCartButton);}
-
-    public WebElement getRemoveButton() {return driver.findElement(removeButton);}
-
-    public void clickGoToCartButton() {getGoToCartButton().click();}
-
-    public WebElement getRremoveButton() {return driver.findElement(removeButton);}
+    public void clickGoToCartButton() {
+        getGoToCartButton().click();
+    }
 
     public String getFirstProduct() {
-        return driver.findElements(productName).get(0).getText();
+        List<WebElement> products = driverWrapper.findElements(productName);
+        return products.isEmpty() ? null : products.get(0).getText();
     }
 
-
-    public boolean isLoginSuccessful() {
-        return driver.getPageSource().contains("Products");
-    }
     public WebElement getSortDropdown() {
-        return driver.findElement(sortDropdown);
+        return driverWrapper.visibilityElement(sortDropdown);
     }
 
     public void clickSortDropdown() {
         getSortDropdown().click();
     }
 
-    //Functions
-
     public void addToCartByProductName(String productName) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement product = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//div[text()='" + productName + "']/ancestor::div[@class='inventory_item']")));
-
-        product.findElement(By.cssSelector(".btn_inventory")).click();
+        WebElement product = driverWrapper.visibilityElement(
+                By.xpath("//div[text()='" + productName + "']/ancestor::div[@class='inventory_item']")
+        );
+        product.findElement(addToCartButton).click();
     }
-
 
     public boolean isProductInCart(String productName) {
-        return driver.findElement(By.xpath("//a[text()='" + productName + "']")).isDisplayed();
+        try {
+            return driverWrapper.visibilityElement(By.xpath("//a[text()='" + productName + "']")).isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
     }
-    //Business logic
+    public boolean isLoginSuccessful() {
+        try {
+            driverWrapper.visibilityElement(productName);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
+    // BUSINESS logic
     public ProductPage addToCart(String productName) {
         addToCartByProductName(productName);
-        return new ProductPage(driver);
+        return this;
     }
+
     public CartPage goToCart() {
         clickGoToCartButton();
-        return new CartPage(driver);
+        return new CartPage(driverWrapper);
     }
 
     public ProductPage setSortDropdownOption(String option) {
-        clickAppLogo();
-        clickSortDropdown();
         Select dropdown = new Select(getSortDropdown());
         dropdown.selectByValue(option);
         return this;
@@ -96,9 +103,9 @@ public class ProductPage {
 
     public BurgerMenu goToBurgerMenu() {
         clickBurgerMenuButton();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("inventory_sidebar_link")));
-        return new BurgerMenu(driver);
+        driverWrapper.visibilityElement(By.id("inventory_sidebar_link"));
+        return new BurgerMenu(driverWrapper);
     }
+
 
 }
